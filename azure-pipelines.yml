@@ -1,0 +1,35 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: Bash@3
+  displayName: "Listar arquivos do projeto"
+  inputs:
+    targetType: 'inline'
+    script: |
+      echo "Arquivos presentes no repositório:"
+      ls -R
+
+- task: Bash@3
+  displayName: "Validar estrutura do projeto"
+  inputs:
+    targetType: 'inline'
+    script: |
+      if [ -f "index.html" ] && [ -f "style.css" ] && [ -f "script.js" ]; then
+        echo "Estrutura OK"
+      else
+        echo "Erro: Arquivos essenciais não encontrados"
+        exit 1
+      fi
+
+- task: Bash@3
+  displayName: "Simular build (projeto estático)"
+  inputs:
+    targetType: 'inline'
+    script: |
+      echo "Build concluído (projeto HTML/CSS/JS não requer compilação)"
