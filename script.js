@@ -1,40 +1,54 @@
-let display = document.getElementById("display");
-let historicoLista = document.getElementById("historico");
+import {
+    appendNumber,
+    appendOperator,
+    clearExpression,
+    evaluateExpression,
+    undoExpression,
+} from "./calculator.js";
+
+const display = document.getElementById("display");
+const historicoLista = document.getElementById("historico");
 
 let expressao = "";
-let historico = [];
+const historico = [];
+
+function atualizarDisplay() {
+    display.innerText = expressao || "0";
+}
 
 document.querySelectorAll(".num").forEach(btn => {
     btn.addEventListener("click", () => {
-        expressao += btn.innerText;
-        display.innerText = expressao;
+        expressao = appendNumber(expressao, btn.innerText);
+        atualizarDisplay();
     });
 });
 
 document.querySelectorAll(".op").forEach(btn => {
     btn.addEventListener("click", () => {
-        expressao += " " + btn.innerText + " ";
-        display.innerText = expressao;
+        expressao = appendOperator(expressao, btn.innerText);
+        atualizarDisplay();
     });
 });
 
 document.getElementById("clear").addEventListener("click", () => {
-    expressao = "";
-    display.innerText = "0";
+    expressao = clearExpression();
+    atualizarDisplay();
 });
 
 document.getElementById("undo").addEventListener("click", () => {
-    expressao = expressao.trim().slice(0, -1);
-    display.innerText = expressao || "0";
+    expressao = undoExpression(expressao);
+    atualizarDisplay();
 });
 
 document.getElementById("igual").addEventListener("click", () => {
     try {
-        historico.push(expressao);
-        let resultado = eval(expressao);
-        registrarHistorico(expressao + " = " + resultado);
+        const expressaoAtual = expressao.trim();
+        const resultado = evaluateExpression(expressaoAtual);
+
+        historico.push(expressaoAtual);
+        registrarHistorico(`${expressaoAtual} = ${resultado}`);
         expressao = resultado.toString();
-        display.innerText = expressao;
+        atualizarDisplay();
     } catch {
         display.innerText = "Erro";
     }
@@ -48,7 +62,7 @@ document.getElementById("retornar").addEventListener("click", () => {
 });
 
 function registrarHistorico(texto) {
-    let item = document.createElement("li");
+    const item = document.createElement("li");
     item.innerText = texto;
     historicoLista.appendChild(item);
 }
